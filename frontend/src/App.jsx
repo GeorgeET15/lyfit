@@ -1,35 +1,45 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import React from "react";
+import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
+import { useCookies } from "react-cookie";
+import OnBoardingScreen from "./screens/OnBoardingScreen";
+import HomeScreen from "./screens/HomeScreen";
+import LoginScreen from "./screens/LoginScreen";
+import SignupScreen from "./screens/SignupScreen";
 
-function App() {
-  const [count, setCount] = useState(0)
+const App = () => {
+  const [cookies] = useCookies(["AuthToken"]);
+  const authToken = cookies.AuthToken;
 
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
-}
+    <BrowserRouter>
+      <Routes>
+        {/* Redirect to Dashboard if logged in, else show Home */}
+        <Route
+          path="/"
+          element={authToken ? <Navigate to="/dashboard" /> : <HomeScreen />}
+        />
 
-export default App
+        {/* Protected route for Dashboard */}
+        {authToken ? (
+          <Route path="/dashboard" element={<HomeScreen />} />
+        ) : (
+          // Redirect to Login if not authenticated
+          <Route path="/dashboard" element={<Navigate to="/login" />} />
+        )}
+
+        {/* Public routes for Login and Signup */}
+        {!authToken && <Route path="/login" element={<LoginScreen />} />}
+        {!authToken && <Route path="/signup" element={<SignupScreen />} />}
+
+        {/* Catch-all route redirects */}
+        <Route
+          path="*"
+          element={<Navigate to={authToken ? "/dashboard" : "/login"} />}
+        />
+        <Route path="/onboarding" element={<OnBoardingScreen />} />
+      </Routes>
+    </BrowserRouter>
+  );
+};
+
+export default App;
