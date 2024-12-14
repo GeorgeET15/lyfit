@@ -62,7 +62,6 @@ app.post("/signup", async (req, res) => {
       user_id: generatedUserId,
       email: sanitizedEmail,
       hashed_password: hashedPassword,
-      capsules: [], // Initialize capsules as an empty array for new users
     };
 
     const insertedUser = await users.insertOne(data);
@@ -118,6 +117,51 @@ app.post("/login", async (req, res) => {
       .status(500)
       .json({ success: false, error: "An error occurred during login." });
   }
+});
+
+//Onboarding Route
+
+app.post("/onboarding", async (req, res) => {
+  const { username, age, weight, height, diet_res, exe_style, userId } =
+    req.body;
+
+  try {
+    const user_data = {
+      username,
+      age,
+      weight,
+      height,
+      diet_res,
+      exe_style,
+      userId,
+    };
+
+    const user = db.collection("onboarding_data");
+    const result = await user.insertOne(user_data);
+
+    res.status(201).json({
+      success: true,
+      message: "Onboarding completed successfully!",
+      data: result,
+    });
+  } catch (error) {
+    console.error(error);
+    res
+      .status(500)
+      .json({ success: false, error: "Error completing onboarding" });
+  }
+});
+
+// diet planning
+
+app.get("/getuserdata", async (req, res) => {
+  const { userId } = req.body;
+  const on_data = db.collection("onboarding_data");
+
+  on_data
+    .findOne()
+    .then((onb_data) => res.json(onb_data))
+    .catch((err) => res.json(err));
 });
 
 // Server Start

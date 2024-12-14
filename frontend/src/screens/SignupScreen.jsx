@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useCookies } from "react-cookie";
 import { useNavigate } from "react-router-dom";
 
 const SignupScreen = () => {
@@ -6,6 +7,7 @@ const SignupScreen = () => {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [loading, setLoading] = useState(false); // Add loading state
+  const [cookies, setCookie, removeCookie] = useCookies(["cookie-name"]);
   const navigate = useNavigate();
 
   const handleSignup = async (e) => {
@@ -19,6 +21,7 @@ const SignupScreen = () => {
       });
       const data = await response.json();
       if (data.token) {
+        localStorage.setItem("UserId", data.userId);
         navigate("/onboarding");
       } else {
         alert("Signup failed");

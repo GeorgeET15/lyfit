@@ -5,6 +5,8 @@ import OnBoardingScreen from "./screens/OnBoardingScreen";
 import HomeScreen from "./screens/HomeScreen";
 import LoginScreen from "./screens/LoginScreen";
 import SignupScreen from "./screens/SignupScreen";
+import Dashboard from "./screens/Dashboard";
+import DietPlan from "./screens/DietPlan";
 
 const App = () => {
   const [cookies] = useCookies(["AuthToken"]);
@@ -21,7 +23,7 @@ const App = () => {
 
         {/* Protected route for Dashboard */}
         {authToken ? (
-          <Route path="/dashboard" element={<HomeScreen />} />
+          <Route path="/dashboard" element={<Dashboard />} />
         ) : (
           // Redirect to Login if not authenticated
           <Route path="/dashboard" element={<Navigate to="/login" />} />
@@ -37,6 +39,7 @@ const App = () => {
           element={<Navigate to={authToken ? "/dashboard" : "/login"} />}
         />
         <Route path="/onboarding" element={<OnBoardingScreen />} />
+        <Route path="/dietplan" element={<DietPlan />} />
       </Routes>
     </BrowserRouter>
   );
